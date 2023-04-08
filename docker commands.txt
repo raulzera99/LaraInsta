@@ -1,0 +1,22 @@
+composer create-project --prefer-dist laravel/laravel app
+
+github.com/laradock/laradock
+laradock.io
+
+na raiz do projeto...
+git clone https://github.com/laradock/laradock.github
+
+copiar arquivo env-example para novo arquivo ".env" dentro da pasta laradocks
+.env é um arquivo de configuração das portas e propriedades das aplicações
+
+inicia os containers
+sudo docker-compose up -d nginx mysql phpmyadmin
+
+lista containers
+sudo docker-compose ps
+
+acessar workspace do container 
+sudo docker-compose exec --user=laradock workspace bash
+
+migrar banco de dados
+php artisan migrate

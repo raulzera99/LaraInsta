@@ -1,0 +1,30 @@
+COMANDOS LARAVEL
+
+-criar projeto laravel
+composer create-project --prefer-dist laravel/laravel=8.83.27 appLoja
+
+-criar controller laravel
+php artisan make:controller folder\name
+
+- criar model laravel
+php artisan make:model folder\name 
+
+- criar model e arquivo de migration laravel
+php artisan make:model name -m
+
+- criar dados para teste
+php artisan make:seeder name 
+
+- criar classes de validacao
+php artisan make:request name
+
+
+-OBSERVACOES:
+criar tabelas com chaves primarias e somente depois usar ALTER TABLE para adcionar chave estrangeira
+
+-ERRORS:
+para resolver erro sobre criacao do projeto 
+adicionar observacao no arquivo php.ini linha 763 e 1337
+
+
+
