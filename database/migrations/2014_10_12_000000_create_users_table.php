@@ -8,8 +8,7 @@ return new class extends Migration{
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void{
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('firstname');
@@ -20,6 +19,8 @@ return new class extends Migration{
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+
+
         });
     }
 
