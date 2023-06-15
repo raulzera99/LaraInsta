@@ -18,4 +18,5 @@ interface UserServiceInterface{
     public function store(Request $request);
     public function update($data, $id);
     public function destroy($id);
+    public function getRoles();
 }

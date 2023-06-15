@@ -38,24 +38,26 @@
                                             class="rounded img-thumbnail mx-auto avatar"
                                             style="max-height: 200px; width: 200px"/>
                                             <div class="mt-3">
-                                                <div class="fileInput">
-                                                    {{-- <button id="upload"
+                                                    <button
                                                     type="button"
-                                                    class="btn btn-success btn-lg upload"
-                                                    title="Upload Images">
+                                                    title="Upload Image" 
+                                                    class="btn btn-success btn-lg upload" 
+                                                    id="upload">
                                                         <i class="fa fa-upload fa-5x"
                                                         style="font-size: 30px"></i>
-                                                        <input 
+                                                    </button>
+                                                    <input 
                                                         type="file" 
-                                                        name="logo"
-                                                        placeholder="Choose file"
-                                                        id="input_image">
-                                                        
-                                                        @error('logo')
-                                                        <p class="invalid-feedback text-danger">{{$message}}</p>
-                                                        @enderror
-                                                    </button> --}}
-                                                    <label for="profileImage"   
+                                                        class="form-control" 
+                                                        id="input_image" 
+                                                        name="profileImage" 
+                                                        style="display: none"
+                                                    >
+                                                    @error('profileImage')
+                                                    <p class="invalid-feedback text-danger">{{$message}}</p>
+                                                    @enderror
+
+                                                    {{-- <label for="profileImage"   
                                                     class="btn btn-outline-success btn-lg upload-btn">
                                 
                                                         <i class="fa fa-upload fa-5x"
@@ -71,8 +73,7 @@
                                                     >
                                                     @error('profileImage')
                                                     <p class="invalid-feedback text-danger">{{$message}}</p>
-                                                    @enderror
-                                                </div>
+                                                    @enderror --}}
                                             </div>
                                             <div class="mt-4">
                                                 <button type="button" id="deleteLogoBtn" data-profileImage-id="{{ $user->profile->profileImage }}" class="btn btn-danger"><i class="fa fa-trash justify-content-center" style="color: white"></i></button>
@@ -161,7 +162,7 @@
                 
                 var inputImage = document.getElementById('input_image');
 
-                inputImage.addEventListener('change', function(e){
+                $('#input_image').change(function(e){
                     let reader = new FileReader();
                     
                     reader.onload = (e) => { 
@@ -170,6 +171,8 @@
                     }
                     reader.readAsDataURL(this.files[0]); 
                 });
+
+                
 
                 $('#file-update').submit( function(event) {
                     event.preventDefault();

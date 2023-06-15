@@ -62,11 +62,13 @@ public function store(Request $request){
 
     //Create a new profile for the user
     $profile = new Profile([
+        // 'user_id' => $user->id,
         'title' => $user->name,
         'description' => 'This is my description',
         'url' => 'https://www.example.com',
     ]);
 
+    $profile->user_id = $user->id;
     $profile->save();
     $user->profile_id = $profile->id;
     $user->save();
@@ -112,6 +114,15 @@ public function store(Request $request){
         return ([
             'success' => 'User deleted successfully',
             'error' => null	
+        ]);
+    }
+
+    //Get Roles
+    public function getRoles(){
+        return ([
+            'roles' => $this->repository->roles(),
+            'error' => null,
+            'success' => 'Roles found successfully'
         ]);
     }
 

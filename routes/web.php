@@ -51,6 +51,32 @@ Auth::routes();
 // // Logout user
 // Route::post('/logout', [Auth\LoginController::class, 'logout'])->name('logout');
 
+/*
+|--------------------------------------------------------------------------
+| Home Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', [HomeController::class, 'index']);
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| Middleware Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::group(['middleware' => ['auth']], function() {
+
+    Route::resource('roles', RoleController::class);
+
+    Route::resource('users', UserController::class);
+
+    Route::resource('posts', PostController::class);
+
+    Route::resource('profiles', ProfileController::class);
+
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -134,8 +160,6 @@ Route::prefix('posts')->group(function () {
 });
 
 
-Route::get('/', [HomeController::class, 'index']);
-Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
 

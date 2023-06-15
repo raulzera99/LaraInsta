@@ -57,6 +57,9 @@ class UserController extends Controller{
 
     //Show Form to Create New User
     public function create(){
+        // $roles = $this->service->getRoles();
+
+        // return view('register', compact('roles'));
         return view('register');
     }
 
@@ -65,8 +68,8 @@ class UserController extends Controller{
 
         $data = $this->service->store($request);
 
-        return view('users.index', [
-            'users' => $data['users'],
+        return view('profiles.index', [
+            'user' => $data['user'],
             'error' => $data['error'],
             'success' => $data['success'],
         ]);
