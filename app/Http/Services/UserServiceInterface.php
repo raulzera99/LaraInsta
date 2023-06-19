@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 // index - Show all 
