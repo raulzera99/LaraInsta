@@ -14,6 +14,7 @@ return new class extends Migration{
             $table->timestamps();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
+            // $table->string('profile_image_id')->nullable();
             $table->string('url')->nullable();
             
             

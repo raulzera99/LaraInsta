@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use console;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Http\Request;
@@ -48,47 +49,7 @@ class ProfileController extends Controller{
         ]);
 
     }
-
-    public function self(){
-        $user = $this->service->self();
-        //TODO: Fix this
-        // if($user['error']){
-        //     return redirect('/')->with('error', $user['error']);
-        // }
-
-        // $follows = (auth()->user()) ? $user['user']->profile()->following() : false;
-
-        // $postCount = Cache::remember(
-        //     'count.posts.' . $user->id,
-        //     now()->addSeconds(30),
-        //     function () use ($user) {
-        //         return $user->posts->count();
-        //     });
-
-        // $followersCount = Cache::remember(
-        //     'count.followers.' . $user->id,
-        //     now()->addSeconds(30),
-        //     function () use ($user) {
-        //         return $user->profile->followers->count();
-        //     });
-
-        // $followingCount = Cache::remember(
-        //     'count.following.' . $user->id,
-        //     now()->addSeconds(30),
-        //     function () use ($user) {
-        //         return $user->following->count();
-        //     });
-
-        // return view('profiles.index', compact('user', 'follows', 'postCount', 'followersCount', 'followingCount'));
-
-        return view('profiles.show', [
-            'user' => $user['user'],
-            'error' => $user['error'],
-            'success' => $user['success'],
-        ]);
-    }
     
-
     /**
      * Show the form for creating a new resource.
      */
@@ -112,7 +73,7 @@ class ProfileController extends Controller{
         if($user['error']){
             return redirect('/')->with('error', $user['error']);
         }
-
+        //TODO: Fix this
         // $follows = (auth()->user()) ? $user['user']->profile->following : false;
 
         // $postCount = Cache::remember(

@@ -81,7 +81,7 @@
         </li>
   
         <li class="nav-item pb-5">
-          <a href="{{route('profiles.self')}}" class="nav-link">
+          <a href="{{route('profiles.show', auth()->user())}}" class="nav-link">
             <button >
               <span class="text-dark">
                 <img src="{{asset('lib/images/Profile.svg')}}" />

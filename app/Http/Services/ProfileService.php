@@ -2,12 +2,16 @@
 
 namespace App\Http\Services;
 
+use console;
+use App\Models\User;
+use App\Models\Media;
 use App\Models\Profile;
+use App\Models\Follower;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreProfileRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Services\ProfileServiceInterface;
-use App\Models\User;
 
 class ProfileService implements ProfileServiceInterface{
     private $repository;
@@ -16,7 +20,6 @@ class ProfileService implements ProfileServiceInterface{
     public function __construct(Profile $profileModel){
         $this->repository = $profileModel;
     }
-
 
     /**
      * Display a listing of the resource.
@@ -35,25 +38,6 @@ class ProfileService implements ProfileServiceInterface{
             'error' => null,
             'success' => 'Profiles found successfully'
         ]);
-    }
-
-    public function self(){
-        $user = auth()->user();
-
-        if($user){
-            return [
-                'user' => $user,
-                'error' => false,
-                'success' => true,
-            ];
-        }
-        else{
-            return [
-                'user' => null,
-                'error' => false,
-                'success' => true,
-            ];
-        }
     }
 
      /**
@@ -75,51 +59,73 @@ class ProfileService implements ProfileServiceInterface{
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request){
-        // $data = $request->validate($this->repository->rules());
-        
-        // $data['password'] = bcrypt($data['password']);
-
-        // $data = $this->repository->create($data);
-
-        // if(!$data){
-        //     return ([ 'error' => 'Profile not created'
-        //         , 'success' => null
-        //     ]);
-        // }
-
-        // return ([
-        //     'profile' => $data,
-        //     'success' => 'Profile created successfully',
-        //     'error' => null
-        // ]);
+/**
+ * Update the specified resource in storage.
+ */
+public function update(Request $request, $userId){
+    if (!auth()->check() || auth()->user()->id != $userId) {
+        return [
+            'error' => 'You must be logged in to update a profile',
+            'success' => null,
+        ];
     }
 
-   
+    $user = User::find($userId);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update($newData, $userId){
-        $profile = User::find($userId)->profile;
+    if (!$user) {
+        return [
+            'error' => 'User not found',
+            'success' => null,
+        ];
+    }
 
-        $profile = $profile->update($newData);
+    $profile = $user->profile;
 
-        if(!$profile){
-            return ([ 'error' => 'Profile not updated'
-                , 'success' => null
-            ]);
-        }
+    if (!$profile) {
+        $profile = new Profile();
+        $profile->user()->associate($user);
+    }
 
-        return ([
-            'profile' => $profile,
-            'success' => 'Profile updated successfully',
-            'error' => null
+    $newData = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string|max:255',
+        'profile_image' => ['image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+    ]);
+
+    if ($request->hasFile('profile_image')) {
+        $profileImage = $request->file('profile_image');
+        $profileImageName = time() . '.' . $profileImage->extension();
+        $newData['profile_image']->storeAs('public/profile_images', $profileImageName);
+
+        $media = new Media([
+            'path' => $profileImageName,
         ]);
+
+        $profile->profileImage()->save($media);
+    } else {
+        // Verifica se já existe uma imagem de perfil associada ao perfil
+        if (!$profile->profileImage) {
+            $media = new Media([
+                'path' => '/no-logo.png', // Imagem padrão 'no-logo'.png
+            ]);
+
+            $profile->profileImage()->save($media);
+        }
     }
+
+    $profile->title = $newData['title'];
+    $profile->description = $newData['description'];
+
+    $profile->save();
+
+    return ([
+        'profile' => $profile,
+        'success' => 'Profile updated successfully',
+        'error' => null,
+    ]);
+}
+
+    
 
     /**
      * Remove the specified resource from storage.
@@ -175,118 +181,52 @@ class ProfileService implements ProfileServiceInterface{
 
     }
 
-    // public function following($profile){
-    //     $data = $this->repository->find($profile);
+    public function follow($profileId){
 
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
+        $profile = $this->repository->find($profileId);
 
-    //     $data = $data->following;
+        if(!$profile){
+            return ([ 'error' => 'Profile not found'
+                , 'success' => null
+            ]);
+        }
 
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
+        if(!auth()){
+            return ([ 'error' => 'You must be logged in to follow a profile'
+                , 'success' => null
+            ]);
+        }
+        else {
+            $user = Auth::user();
+            Follower::create([
+                'profile_from_id' => $user()->profile->id,
+                'profile_to_id' => $profile->id
+            ]);
+        }
+    }
 
-    //     return ([
-    //         'profile' => $data,
-    //         'success' => 'Profile found successfully',
-    //         'error' => null
-    //     ]);
-    // }
+    public function unfollow($profileId){
+        $profile = $this->repository->find($profileId);
 
-    // public function followers($profile){
-    //     $data = $this->repository->find($profile);
+        if(!$profile){
+            return ([ 'error' => 'Profile not found'
+                , 'success' => null
+            ]);
+        }
 
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
+        if(!auth()){
+            return ([ 'error' => 'You must be logged in to unfollow a profile'
+                , 'success' => null
+            ]);
+        }
+        else {
+            $user = Auth::user();
+            $follower = Follower::where('profile_from_id', $user()->profile->id)
+                ->where('profile_to_id', $profile->id)
+                ->first();
 
-    //     $data = $data->followers;
-
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
-
-    //     return ([
-    //         'profile' => $data,
-    //         'success' => 'Profile found successfully',
-    //         'error' => null
-    //     ]);
-    // }
-
-    // public function follow($profile){
-    //     $data = $this->repository->find($profile);
-
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
-
-    //     $data = $data->follow();
-
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
-
-    //     return ([
-    //         'profile' => $data,
-    //         'success' => 'Profile found successfully',
-    //         'error' => null
-    //     ]);
-    // }
-
-    // public function unfollow($profile){
-    //     $data = $this->repository->find($profile);
-
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
-
-    //     $data = $data->unfollow();
-
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
-
-    //     return ([
-    //         'profile' => $data,
-    //         'success' => 'Profile found successfully',
-    //         'error' => null
-    //     ]);
-    // }
-
-    // public function search($search){
-    //     $data = $this->repository->where('name', 'like', '%'.$search.'%')->get();
-
-    //     if(!$data){
-    //         return ([ 'error' => 'Profile not found'
-    //             , 'success' => null
-    //         ]);
-    //     }
-
-    //     return ([
-    //         'profile' => $data,
-    //         'success' => 'Profile found successfully',
-    //         'error' => null
-    //     ]);
-    // }
-
-
+            $follower->delete();
+        }
+    }
 
 }

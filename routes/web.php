@@ -119,19 +119,17 @@ Route::prefix('profiles')->group(function () {
 
     Route::get('/{profile}', [ProfileController::class, 'show'])->name('profiles.show');
 
-    Route::get('/create', [ProfileController::class, 'create'])->name('profiles.create');
-
-    Route::post('/', [ProfileController::class, 'store'])->name('profiles.store');
-
     Route::get('/{profile}/edit', [ProfileController::class, 'edit'])->name('profiles.edit');
 
-    Route::patch('/{profile}', [ProfileController::class, 'update'])->name('profiles.update');
+    Route::post('/{profile}', [ProfileController::class, 'update'])->name('profiles.update');
 
     Route::delete('/delete', [ProfileController::class, 'delete'])->name('profiles.delete');
     
     Route::delete('/delete', [ProfileController::class, 'deleteProfileImage'])->name('profiles.deleteProfileImage');
 
     Route::delete('/{profile}', [ProfileController::class, 'destroy'])->name('profiles.destroy');
+
+    Route::post('/{user}/{profile}/follow', [ProfileController::class, 'follow'])->name('profiles.follow');
 });
 
 /*

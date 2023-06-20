@@ -13,12 +13,7 @@ class Follower extends Model{
         'profile_to_id',
     ];
 
-    public function profileFrom(){
+    public function profile(){
         return $this->belongsTo(Profile::class);
     }
-
-    public function profileTo(){
-        return $this->belongsTo(Profile::class);
-    }
-
 }

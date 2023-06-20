@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 //use App\Models\User;
 use console;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Services\UserServiceInterface;
 
 // index - Show all 
@@ -68,8 +69,19 @@ class UserController extends Controller{
 
         $data = $this->service->store($request);
 
-        return view('profiles.index', [
-            'user' => $data['user'],
+        // Verifique se a criação do usuário foi bem-sucedida
+        if ($data['user']) {
+            // Realize o login automático do usuário
+            Auth::login($data['user']);
+
+            return view('home', [
+                'user' => $data['user'],
+                'error' => $data['error'],
+                'success' => $data['success'],
+            ]);
+        }
+
+        return view('home', [
             'error' => $data['error'],
             'success' => $data['success'],
         ]);

@@ -7,6 +7,7 @@ use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use App\Http\Services\UserServiceInterface;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 // index - Show all 
 // show - Show single 
@@ -17,6 +18,9 @@ use App\Http\Services\UserServiceInterface;
 // destroy - Delete  
 
 class UserService implements UserServiceInterface{
+
+    use AuthenticatesUsers;
+
     private $repository;
 
     //Constructor
@@ -61,21 +65,21 @@ public function store(Request $request){
     $user = $this->repository->create($data);
 
     //Create a new profile for the user
-    $profile = new Profile([
-        // 'user_id' => $user->id,
-        'title' => $user->name,
-        'description' => 'This is my description',
-        'url' => 'https://www.example.com',
-    ]);
+    // $profile = new Profile([
+    //     // 'user_id' => $user->id,
+    //     'title' => $user->firstname . ' ' . $user->lastname,
+    //     'description' => 'This is my description',
+    //     'url' => 'https://www.example.com',
+    // ]);
 
-    $profile->user_id = $user->id;
-    $profile->save();
-    $user->profile_id = $profile->id;
+    // $profile->user_id = $user->id;
+    // $profile->save();
+    // $user->profile_id = $profile->id;
     $user->save();
 
     return ([ 
         'user' => $user,
-        'profile' => $profile,
+        'profile' => $user->profile,
         'success' => 'User created successfully',
         'error' => null
     ]);

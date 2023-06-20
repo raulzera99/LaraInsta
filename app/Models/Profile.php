@@ -20,20 +20,25 @@ class Profile extends Model{
     }
 
     public function profileImage(){
-        return $this->belongsTo(Media::class);
+        return $this->hasOne(Media::class);
     }
 
     public function followers(){
-        return $this->belongsToMany(Profile::class);
+        return $this->hasMany(Follower::class);
     }
 
     public function following(){
-        return $this->belongsToMany(Profile::class);
+        return $this->belongsToMany(Profile::class, 'followers', 'profile_from_id', 'profile_to_id');
+    }
+
+    public function isFollowing(Profile $profile){
+        return $this->following()->where('profile_id', $profile->id)->exists();
     }
 
     public function posts(){
         return $this->hasMany(Post::class);
     }
+
 
     // public function getProfileImageAttribute()
     // {
@@ -45,7 +50,6 @@ class Profile extends Model{
             'title' => 'required|min:3|max:255',
             'description' => 'required|min:3|max:255',
             'url' => 'url',
-            'user_id' => 'required',
         ];
     }
 

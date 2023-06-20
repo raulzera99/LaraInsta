@@ -15,9 +15,7 @@ use Illuminate\Http\Request;
 interface ProfileServiceInterface{
     public function find($id);
     public function index();
-    public function self();
-    public function store(Request $request);
-    public function update($data, $id);
+    public function update(Request $request, $userId);
     public function destroy($id);
     public function deleteProfileImage($id, $profileImage, $path);
 }
