@@ -125,7 +125,7 @@ Route::prefix('profiles')->group(function () {
 
     Route::delete('/delete', [ProfileController::class, 'delete'])->name('profiles.delete');
     
-    Route::delete('/delete', [ProfileController::class, 'deleteProfileImage'])->name('profiles.deleteProfileImage');
+    Route::post('/{user}/deleteProfileImage', [ProfileController::class, 'deleteProfileImage'])->name('profiles.deleteProfileImage');
 
     Route::delete('/{profile}', [ProfileController::class, 'destroy'])->name('profiles.destroy');
 

@@ -137,20 +137,69 @@ class ProfileController extends Controller{
         //
     }
 
-    public function deleteProfileImage(Request $request, $id){
-        $image = $request->input('profileImage-id');
-        $imagePath = public_path('profiles/'.$image);
-        $profile = $this->userService->find($id);
+    // public function deleteProfileImage(Request $request, $id){
+    //     $image = $request->input('profileImage_id');
+    //     $imagePath = public_path('profiles/'.$image);
         
-        $response = $this->service->deleteProfileImage($profile->id, $image, $imagePath);
+    //     $response = $this->service->deleteProfileImage($id, $image, $imagePath);
         
+    //     return response()->json([
+    //         'user' => $response['user'], 
+    //         'profile' => $response['profile'],
+    //         'success' => $response['success'], 
+    //         'error' => $response['error']
+    //     ]);
+    // }
+
+    public function deleteProfileImage($userId){
+        $user = $this->userService->find($userId);
+        $profileImage = $user['user']->profile->profileImage;
+
+        if (!$profileImage) {
+            return response()->json([
+                'error' => 'Profile image already null',
+                'success' => null
+            ]);
+        }
+
+        // $imagePath = public_path('profiles/' . $profileImage->path);
+
+        // $response = $this->service->deleteProfileImage($user['user']->profile->id, $profileImage, $imagePath);
+
+        // if($response['error']){
+        //     return response()->json([
+        //         'error' => $response['error'],
+        //         'success' => null
+        //     ]);
+        // }
+
+        // // Adiciona um parâmetro único ao URL da imagem
+        // $noLogoImageUrl = asset('storage/profile_images/no-logo.png') . '?timestamp=' . time();
+
+        // return response()->json([
+        //     'user' => $response['user'],
+        //     'profile' => $response['profile'],
+        //     'success' => $response['success'],
+        //     'error' => $response['error'],
+        //     'noLogoImageUrl' => $noLogoImageUrl
+        // ]);
+        $response = $this->service->deleteProfileImage($user['user']->profile->id, $profileImage);
+
+        if ($response['error']) {
+            return response()->json([
+                'error' => $response['error'],
+                'success' => null
+            ]);
+        }
+    
         return response()->json([
-            'success' => $response['success'], 
+            'user' => $response['user'],
+            'profile' => $response['profile'],
+            'success' => $response['success'],
             'error' => $response['error']
         ]);
-    }
 
-    
+    }
 
     // public function follow(User $user){
     //     // return auth()->user()->following()->toggle($user->profile);

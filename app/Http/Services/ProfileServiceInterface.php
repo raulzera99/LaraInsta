@@ -17,5 +17,5 @@ interface ProfileServiceInterface{
     public function index();
     public function update(Request $request, $userId);
     public function destroy($id);
-    public function deleteProfileImage($id, $profileImage, $path);
+    public function deleteProfileImage($profileId, $profileImage);
 }

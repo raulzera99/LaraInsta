@@ -9,6 +9,7 @@ use App\Models\Profile;
 use App\Models\Follower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use App\Http\Requests\StoreProfileRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Services\ProfileServiceInterface;
@@ -93,24 +94,32 @@ public function update(Request $request, $userId){
     ]);
 
     if ($request->hasFile('profile_image')) {
+        //Save new profile image
         $profileImage = $request->file('profile_image');
         $profileImageName = time() . '.' . $profileImage->extension();
         $newData['profile_image']->storeAs('public/profile_images', $profileImageName);
 
-        $media = new Media([
-            'path' => $profileImageName,
-        ]);
+        // Delete old profile image if it exists
+        if ($profile->profileImage && $profile->profileImage->path !== '/no-logo.png') {
+            $oldProfileImage = $profile->profileImage->path;
+            File::delete(storage_path('public/profile_images/' . $oldProfileImage));
+            $profile->profileImage->delete();
+        }
 
-        $profile->profileImage()->save($media);
-    } else {
-        // Verifica se já existe uma imagem de perfil associada ao perfil
-        if (!$profile->profileImage) {
+        if ($profile->profileImage) {
+            // Atualiza a imagem existente
+            $profile->profileImage->path = $profileImageName;
+            $profile->profileImage->save();
+        } else {
+            // Cria uma nova imagem de perfil
             $media = new Media([
-                'path' => '/no-logo.png', // Imagem padrão 'no-logo'.png
+                'path' => $profileImageName,
             ]);
-
             $profile->profileImage()->save($media);
         }
+        
+    } else {
+        $newData['profile_image'] = $profile->profileImage->path;
     }
 
     $profile->title = $newData['title'];
@@ -119,7 +128,8 @@ public function update(Request $request, $userId){
     $profile->save();
 
     return ([
-        'profile' => $profile,
+        'user' => $user,
+        'profile' => $user->profile,
         'success' => 'Profile updated successfully',
         'error' => null,
     ]);
@@ -154,31 +164,77 @@ public function update(Request $request, $userId){
         ]);
     }
 
-    public function deleteProfileImage($id, $profileImage, $path){
-        $data = $this->repository->find($id);
+    // public function deleteProfileImage($id, $profileImage, $path){
+    //     $data = $this->repository->find($id);
 
-        if(!$data){
-            return ([ 'error' => 'Profile not found',
-                'success' => null]);
+    //     if(!$data){
+    //         return ([ 'error' => 'Profile not found',
+    //             'success' => null]);
+    //     }
+
+    //     if(file_exists($path) == false || is_file($path) == false || empty($profileImage)){
+    //         return ([ 'error' => 'Profile image not found',
+    //             'success' => null]);
+    //     }
+
+    //     $data->update([
+    //         'profile_image' => null
+    //     ]);
+
+    //     unlink($path);
+    //     $profileImage->delete();
+
+    //     return ([
+    //         'user' => $data,
+    //         'profile' => $data,
+    //         'success' => 'Profile image deleted successfully',
+    //         'error' => null
+    //     ]);
+
+    // }
+
+    public function deleteProfileImage($profileId, $profileImage){
+        $data = $this->repository->find($profileId);
+
+        if (!$data) {
+            return [
+                'error' => 'Profile not found',
+                'success' => null
+            ];
         }
 
-        if(file_exists($path) == false || is_file($path) == false || empty($profileImage)){
-            return ([ 'error' => 'Profile image not found',
-                'success' => null]);
+        if (!$profileImage->path || !$profileImage) {
+            return [
+                'error' => 'Profile image not found',
+                'success' => null
+            ];
+        }
+
+        $imagePath = public_path('storage/profile_images/' . $profileImage->path);
+
+        if(!File::exists($imagePath)){
+            return [
+                'error' => 'Profile image file not found',
+                'success' => null
+            ];
         }
 
         $data->update([
             'profile_image' => null
         ]);
 
-        unlink($path);
-        $profileImage->delete();
-
-        return ([
-            'success' => 'Profile image deleted successfully',
-            'error' => null
+        File::delete($imagePath);
+        // $profileImage->delete();
+        $profileImage->update([
+            'path' => 'no-logo.png'
         ]);
 
+        return [
+            'user' => $data->user,
+            'profile' => $data,
+            'success' => 'Profile image deleted successfully',
+            'error' => null
+        ];
     }
 
     public function follow($profileId){

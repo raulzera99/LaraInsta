@@ -22,7 +22,7 @@
                         action="{{route('profiles.update', $user->id)}}" enctype="multipart/form-data" id="file-update">
                             @csrf
                             @method('POST')
-                        
+                            
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="card my-4">
@@ -62,7 +62,7 @@
                                                     <button 
                                                         type="button" 
                                                         id="deleteLogoBtn" 
-                                                        data-profileImage-id="{{ $user->profile->profileImage->id }}" 
+                                                        data-profileImage-id="{{$user->profile->profileImage->id}}}"
                                                         class="btn btn-danger"
                                                     >
                                                         <i class="fa fa-trash justify-content-center" style="color: white"></i>
@@ -208,20 +208,22 @@
                     e.preventDefault();
                     var id = $(this).data('profileImage-id');
                     $.ajax({
-                        url: "{{ route('profiles.deleteProfileImage', $user->id) }}",
+                        url: "{{ route('profiles.deleteProfileImage', ['user' => $user->id]) }}",
                         type: 'POST',
                         data: {
                             profileImage_id: id
                         },
                         success: function(response) {
-                            if (response) {
+                            if (response.success) {
                                 console.log(response.success);
                                 // atualiza a imagem do logotipo na página
-                                $('#image').attr('src', '{{asset('storage/profile_images/no-logo.png')}}');
-                            } 
+                                $('#image').attr('src', '{{ asset('storage/profile_images/no-logo.png') }}');
+                            } else if(response.error) {
+                                console.log(response.error);
+                            }
                         },
-                        error: function(response) {
-                            console.log(response.error);
+                        error: function(xhr, status, error) {
+                            console.log(xhr.responseText);
                         }
                     })
                 });
