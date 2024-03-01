@@ -34,6 +34,23 @@ class ProfileController extends Controller{
         ]);
     }
 
+    public function showSearch(){
+        return view('profiles.search');
+    }
+
+    public function showSearchResults(Request $request){
+        $search = $request->input('searchTerm');
+        $profiles = $this->service->search($search);
+        $users = $this->userService->index();
+
+        return response()->json([
+            'users' => $users['users'],
+            'profiles' => $profiles['data'], 
+            'error' => $profiles['error'],
+            'success' => $profiles['success'],
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -123,7 +140,12 @@ class ProfileController extends Controller{
 
         $data = $this->service->update($request, $userId);
 
-        return redirect()->route('profiles.show', $userId)->with([
+        if ($data['error']) {
+            return redirect()->back()->withErrors($data['error']);
+        }
+
+        return redirect()->route('profiles.show', $userId)        
+        ->with([
             'profile' => $data['profile'], 
             'error' => $data['error'],
             'success' => $data['success'],
@@ -201,18 +223,24 @@ class ProfileController extends Controller{
 
     }
 
-    // public function follow(User $user){
-    //     // return auth()->user()->following()->toggle($user->profile);
-    // }
+    public function follow(Request $request, Profile $profile){
+        $data = $this->service->follow($request, $profile);
 
-    // public function search(Request $request){
-    //     $search = $request->get('search');
-    //     $profiles = $this->service->search($search);
+        return response()->json([
+            'profile' => $data['profile'],
+            'success' => $data['success'],
+            'error' => $data['error']
+        ]);
+    }
 
-    //     return view('profiles.search', [
-    //         'profiles' => $profiles['profiles'],
-    //         'error' => $profiles['error'],
-    //         'success' => $profiles['success'],
-    //     ]);
-    // }
+    public function unfollow(Request $request, Profile $profile){
+        $data = $this->service->unfollow($request, $profile);
+
+        return response()->json([
+            'profile' => $data['profile'],
+            'success' => $data['success'],
+            'error' => $data['error']
+        ]);
+    }
+
 }

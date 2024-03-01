@@ -1,6 +1,6 @@
 <x-app>
-    <div class="container">
-        <h1>{{$user->username}}</h1>
+    <div class="container offset-2">
+        <h1>timeline</h1>
     </div>
 </x-app>
 

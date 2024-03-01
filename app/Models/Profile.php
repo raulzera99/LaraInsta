@@ -24,7 +24,7 @@ class Profile extends Model{
     }
 
     public function followers(){
-        return $this->hasMany(Follower::class);
+        return $this->belongsToMany(Profile::class, 'followers', 'profile_to_id', 'profile_from_id');
     }
 
     public function following(){
@@ -37,6 +37,10 @@ class Profile extends Model{
 
     public function posts(){
         return $this->hasMany(Post::class);
+    }
+
+    public function comments(){
+        return $this->hasMany(Comment::class);
     }
 
 

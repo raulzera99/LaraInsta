@@ -21,7 +21,7 @@
         </li>
   
         <li class="nav-item">
-          <a class="nav-link" href="">
+          <a class="nav-link" href="{{route('profiles.search')}}">
             <button>
               <span class="text-dark">
                 <i class="uil uil-search"></i>
@@ -30,6 +30,7 @@
             </button>
           </a>
         </li>
+
   
         <li class="nav-item">
           <a class="nav-link" href="">
@@ -103,61 +104,10 @@
           </form>
         
 
-
-          {{-- <a href="{{route('logout')}}" class="nav-link">
-            <button>
-              <span class="text-dark">
-                <i class="uil uil-signout"></i>
-                <span>Logout</span>
-              </span>
-            </button>
-          </a> --}}
         </li>
-  
-        {{-- <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li> --}}
-  
-  
-        {{-- <li class="nav-item dropdown pt-5">
-          <a href="/" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <button>
-              <span class="text-dark">
-                <i class="uil uil-bars"> </i>
-                <span>More</span>
-              </span>
-            </button> 
-          </a>
-  
-          <ul class="dropdown-menu">
-            <li>
-              <a href="#" class="dropdown-item">Settings</a>
-            </li>
-            <li>
-              <a href="#" class="dropdown-item">Privacy</a>
-            </li>
-            <li>
-              <a href="#" class="dropdown-item">Terms</a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <a href="{{route('logout')}}" class="dropdown-item">Exit</a>
-            </li>
-          </ul>
-  
-        </li> --}}
-
-  
   
       </ul>
     </div>
   </nav>
 </aside>
+

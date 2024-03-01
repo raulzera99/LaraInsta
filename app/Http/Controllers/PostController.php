@@ -89,4 +89,22 @@ class PostController extends Controller{
     {
         //
     }
+
+    public function like($id){
+        $data = $this->service->like($id);
+
+        if ($data['error']) {
+            session()->flash('error', $data['error']);
+
+            return redirect()->back()->with([
+                'error' => $data['success'],
+                'success' => null,
+            ]);
+        }
+
+        return redirect()->back()->with([
+            'success' => $data['success'],
+            'error' => null,
+        ]);
+    }
 }

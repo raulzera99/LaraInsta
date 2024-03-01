@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool) env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -200,6 +200,7 @@ return [
          */
         App\Providers\SystemServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        App\Providers\UserModelServiceProvider::class,
     ],
 
     /*

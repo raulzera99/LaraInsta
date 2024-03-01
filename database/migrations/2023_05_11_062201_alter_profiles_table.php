@@ -14,6 +14,7 @@ return new class extends Migration
             
             // User_id is a foreign key that references the id column of the users table.
             $table->foreignId('user_id')
+            ->nullable()
             ->constrained()
             ->onDelete('cascade');
 
@@ -22,6 +23,12 @@ return new class extends Migration
             ->nullable()
             ->constrained()
             ->onDelete('cascade');
+
+            // Like_id is a foreign key that references the id column of the likes table.
+            // $table->foreignId('likes_id')
+            // ->nullable()
+            // ->constrained()
+            // ->onDelete('cascade');
 
             // $table->integer('profile_image_id')->nullable();
             // $table->foreign('profile_image_id')->references('id')->on('medias')->onDelete('cascade');

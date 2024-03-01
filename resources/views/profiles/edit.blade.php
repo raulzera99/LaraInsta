@@ -62,7 +62,7 @@
                                                     <button 
                                                         type="button" 
                                                         id="deleteLogoBtn" 
-                                                        data-profileImage-id="{{$user->profile->profileImage->id}}}"
+                                                        data-profileImage-id="{{ optional($user->profile->profileImage)->id }}}"
                                                         class="btn btn-danger"
                                                     >
                                                         <i class="fa fa-trash justify-content-center" style="color: white"></i>
@@ -104,7 +104,7 @@
                                                     value="{{isset($user->profile->description) ? $user->profile->description:''}}"
                                                 >
                                                 @error('description')
-                                                    <p class="invalid-feedback text-danger">{{$message}}</p>
+                                                    <p class="invalid-feedback text-danger">{{$error}}</p>
                                                 @enderror
                                             </div>
                                         </div> 
@@ -155,11 +155,8 @@
     @push('scripts')
         <script type="text/javascript">
             $(document).ready(function(e) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
+                
+                
                 
                 var inputImage = document.getElementById('input_image');
 

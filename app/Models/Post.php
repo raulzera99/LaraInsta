@@ -20,13 +20,13 @@ class Post extends Model{
         return $this->hasMany(Media::class);
     }
 
-//     public function comments(){
-//         return $this->hasMany(Comment::class);
-//     }
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
 
-//     public function likes(){
-//         return $this->hasMany(Like::class); 
-//     }
+    public function likes(){
+        return $this->hasMany(Like::class); 
+    }
 
     public function rules(){
         return [

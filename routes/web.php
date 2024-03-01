@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -113,11 +114,11 @@ Route::prefix('profiles')->group(function () {
 
     Route::get('/', [ProfileController::class, 'index'])->name('profiles.index');
 
-    Route::get('/', [ProfileController::class, 'manage'])->name('profiles.manage');
+    Route::get('/manage', [ProfileController::class, 'manage'])->name('profiles.manage');
 
     Route::get('/me', [ProfileController::class, 'self'])->name('profiles.self');
 
-    Route::get('/{profile}', [ProfileController::class, 'show'])->name('profiles.show');
+    Route::get('/show/{profile}', [ProfileController::class, 'show'])->name('profiles.show');
 
     Route::get('/{profile}/edit', [ProfileController::class, 'edit'])->name('profiles.edit');
 
@@ -130,6 +131,12 @@ Route::prefix('profiles')->group(function () {
     Route::delete('/{profile}', [ProfileController::class, 'destroy'])->name('profiles.destroy');
 
     Route::post('/{user}/{profile}/follow', [ProfileController::class, 'follow'])->name('profiles.follow');
+
+    Route::post('/{user}/{profile}/unfollow', [ProfileController::class, 'unfollow'])->name('profiles.unfollow');
+
+    Route::get('/explore/search', [ProfileController::class, 'showSearch'])->name('profiles.search');
+    
+    Route::post('/explore/search', [ProfileController::class, 'showSearchResults'])->name('profiles.search');
 });
 
 /*
@@ -155,8 +162,34 @@ Route::prefix('posts')->group(function () {
     Route::delete('/delete', [PostController::class, 'delete'])->name('posts.delete');
 
     Route::delete('/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+    Route::post('/{post}/like', [PostController::class, 'like'])->name('posts.like');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Comment Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('comments')->group(function () {
+
+    Route::get('/', [CommentController::class, 'index'])->name('comments.index');
+
+    // Route::get('/create', [CommentController::class, 'create'])->name('comments.create');
+
+    // Route::get('/{comment}', [CommentController::class, 'show'])->name('comments.show');
+
+    Route::post('/', [CommentController::class, 'store'])->name('comments.store');
+
+    // Route::get('/{comment}/edit', [CommentController::class, 'edit'])->name('comments.edit');
+
+    // Route::patch('/{comment}', [CommentController::class, 'update'])->name('comments.update');
+
+    // Route::delete('/delete', [CommentController::class, 'delete'])->name('comments.delete');
+
+    Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+});
 
 
 

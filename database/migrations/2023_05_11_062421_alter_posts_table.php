@@ -18,6 +18,12 @@ return new class extends Migration
             ->constrained()
             ->onDelete('cascade');
 
+            // Like_id is a foreign key that references the id column of the likes table.
+            $table->foreignId('like_id')
+            ->nullable()
+            ->constrained()
+            ->onDelete('cascade');
+
         });
     }
 

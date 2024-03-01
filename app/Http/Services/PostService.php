@@ -154,4 +154,53 @@ class PostService implements PostServiceInterface{
     public function destroy($id){
         
     }
+
+    public function like($id){
+        if (!auth()->check()) {
+            return [
+                'post' => null,
+                'error' => true,
+                'success' => 'You must be logged in to like a post!',
+            ];
+        }
+
+        $post = $this->repository->find($id);
+
+        if (!$post) {
+            return [
+                'post' => null,
+                'error' => true,
+                'success' => 'Post not found!',
+            ];
+        }
+
+        // Verifica se o usuário já deu like no post
+        $user = auth()->user();
+        $hasLiked = $post->likes()->where('user_id', $user->id)->exists();
+
+        if ($hasLiked) {
+            // Remove o like
+            $post->likes()->detach($user->id);
+            $post->likes_count -= 1;
+            $post->save();
+
+            return [
+                'post' => $post,
+                'error' => false,
+                'success' => 'Post unliked!',
+            ];
+        } else {
+            // Adiciona o like
+            $post->likes()->attach($user->id);
+            $post->likes_count += 1;
+            $post->save();
+
+            return [
+                'post' => $post,
+                'error' => false,
+                'success' => 'Post liked!',
+            ];
+        }
+    }
+
 }

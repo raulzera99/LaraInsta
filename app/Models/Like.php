@@ -8,16 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Like extends Model{
     use HasFactory;
 
-    protected $fillable = [
-        'profile_id',
-        'post_id',
-    ];
-
-    public function profile(){
-        return $this->belongsTo(Profile::class);
-    }
-
     public function post(){
-        return $this->hasMany(Post::class);
+        return $this->belongsTo(Post::class);
     }
 }

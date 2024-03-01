@@ -41,6 +41,23 @@ class ProfileService implements ProfileServiceInterface{
         ]);
     }
 
+    public function search($search){
+        $profiles = $this->repository->where('title', 'like', '%'.$search.'%')->get()->toArray();
+
+        if(!$profiles){
+            return ([ 
+                'error' => 'Profiles not found'
+                , 'success' => null
+            ]);
+        }
+
+        return ([
+            'data' => $profiles,
+            'error' => null,
+            'success' => 'Profiles found successfully'
+        ]);
+    }
+
      /**
      * Search the specified resource.
      */
@@ -237,8 +254,7 @@ public function update(Request $request, $userId){
         ];
     }
 
-    public function follow($profileId){
-
+    public function follow($request, $profileId){
         $profile = $this->repository->find($profileId);
 
         if(!$profile){
@@ -252,16 +268,26 @@ public function update(Request $request, $userId){
                 , 'success' => null
             ]);
         }
-        else {
-            $user = Auth::user();
-            Follower::create([
-                'profile_from_id' => $user()->profile->id,
-                'profile_to_id' => $profile->id
-            ]);
+
+        // Verifique se o usuário autenticado não é o próprio perfil que está sendo visualizado
+        if ($request->user()->id !== $profile->user->id) {
+            // Verifique se o usuário já está seguindo o perfil
+            if (!$request->user()->profile->following()->where('user_to_id', $profile->user->id)->exists()) {
+                // Crie uma nova entrada na tabela followers
+                $request->user()->profile->following()->attach($profile->user->id);
+            }
         }
+
+        return ([
+            'user' => $request->user(),
+            'profile' => $profile,
+            'success' => 'Profile followed successfully',
+            'error' => null
+        ]);
+
     }
 
-    public function unfollow($profileId){
+    public function unfollow($request, $profileId){
         $profile = $this->repository->find($profileId);
 
         if(!$profile){
@@ -275,14 +301,47 @@ public function update(Request $request, $userId){
                 , 'success' => null
             ]);
         }
-        else {
-            $user = Auth::user();
-            $follower = Follower::where('profile_from_id', $user()->profile->id)
-                ->where('profile_to_id', $profile->id)
-                ->first();
 
-            $follower->delete();
+        // Verifique se o usuário autenticado não é o próprio perfil que está sendo visualizado
+        if ($request->user()->id !== $profile->user->id) {
+            // Verifique se o usuário já está seguindo o perfil
+            if ($request->user()->profile->following()->where('user_to_id', $profile->user->id)->exists()) {
+                // Crie uma nova entrada na tabela followers
+                $request->user()->profile->following()->detach($profile->user->id);
+            }
         }
+
+        return ([
+            'user' => $request->user(),
+            'profile' => $profile,
+            'success' => 'Profile unfollowed successfully',
+            'error' => null
+        ]);
+
     }
+
+    // public function unfollow($request, $profileId){
+    //     $profile = $this->repository->find($profileId);
+
+    //     if(!$profile){
+    //         return ([ 'error' => 'Profile not found'
+    //             , 'success' => null
+    //         ]);
+    //     }
+
+    //     if(!auth()){
+    //         return ([ 'error' => 'You must be logged in to unfollow a profile'
+    //             , 'success' => null
+    //         ]);
+    //     }
+    //     else {
+    //         $user = Auth::user();
+    //         $follower = Follower::where('profile_from_id', $user()->profile->id)
+    //             ->where('profile_to_id', $profile->id)
+    //             ->first();
+
+    //         $follower->delete();
+    //     }
+    // }
 
 }

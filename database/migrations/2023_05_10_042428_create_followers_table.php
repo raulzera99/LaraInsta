@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void{
         Schema::create('followers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('profile_from_id');
+            $table->unsignedBigInteger('profile_to_id');
             $table->timestamps();
             
         });
